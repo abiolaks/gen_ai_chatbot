@@ -8,7 +8,6 @@ from langchain_core.prompts import (
 from pymongo import MongoClient  # to connect to MongoDB
 
 
-
 load_dotenv()  # load environment variables from .env file
 groq_api_key = os.getenv("GROQ_API_KEY")  # get the API key from environment variable
 model = os.getenv("MODEL")  # get the model name from environment variable
@@ -44,11 +43,13 @@ user_id = "user123"  # example user ID, in a real application this would be dyna
 
 def get_history(user_id):
     # Retrieve the last 10 messages for the user from MongoDB
-    chats = collection.find({"user_id": user_id}).sort("timestamp", 1)
+    chats = collection.find({"user_id": user_id}).sort("timestamp", 1).limit(10)
     history = []
 
     for chat in chats:
         history.append({"role": chat["role"], "content": chat["message"]})
+
+    return history
 
 
 while True:
@@ -68,6 +69,7 @@ while True:
     response = chain.invoke(
         {"history": history, "questions": question}
     )  # send a message to the chatbot and print the response
+    print(response.content)
 
     # Storing the user data in MongoDB
     collection.insert_one(
@@ -75,7 +77,7 @@ while True:
             "user_id": user_id,
             "role": "user",
             "message": question,
-            "timestamp": datetime.now,
+            "timestamp": datetime.now(),
         }
     )
 
@@ -90,5 +92,3 @@ while True:
     )
 
     # let make the llm retain memory
-
-print(response.content)  # print the content of the response
