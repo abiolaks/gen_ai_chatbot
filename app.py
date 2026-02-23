@@ -8,6 +8,7 @@ from langchain_core.prompts import (
 from pymongo import MongoClient  # to connect to MongoDB
 
 
+
 load_dotenv()  # load environment variables from .env file
 groq_api_key = os.getenv("GROQ_API_KEY")  # get the API key from environment variable
 model = os.getenv("MODEL")  # get the model name from environment variable
